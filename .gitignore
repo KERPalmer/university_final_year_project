@@ -1,4 +1,12 @@
 # Ignore Jupyter notebook checkpoints
-.ipynb_checkpoints/
 Final Year Project.docx
 Lit review plan.docx
+
+*.ipynb_checkpoints
+__pycache__/
+*.csv
+*.xlsx
+*.h5
+*.pkl
+*.env
+.DS_Store
