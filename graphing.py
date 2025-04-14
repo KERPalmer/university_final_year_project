@@ -26,14 +26,6 @@ def graph_normal(predictions, actual, title):
     plt.grid(True)
     plt.show()
 
-    # Calculate and print error metrics
-    mae = mean_absolute_error(predictions, actual)
-    mse = mean_squared_error(predictions, actual)
-    rmse = np.sqrt(mse)
-
-    print(f"{title}  MAE: {mae}")
-    print(f"{title}  RMSE: {rmse}")
-
 def show_results(results):
     results_df = pd.DataFrame(results).sort_values(by='mean_test_score', ascending=False)
     for i, row in results_df.iterrows():
@@ -42,3 +34,19 @@ def show_results(results):
         print(f"Mean Test Score: {row['mean_test_score']:.4f}")
         print(f"Std Dev of Test Score: {row['std_test_score']:.4f}")
         print("-" * 30)
+
+def graph_line(predictions, actual, title):
+    x = range(len(actual))
+    
+    plt.figure(figsize=(10, 6))
+    plt.plot(x, actual, label='Actual', marker='o')
+    plt.plot(x, predictions, label='Predicted', marker='x')
+    plt.xlabel('Time Step')
+    plt.ylabel('Difference')
+    plt.title(title)
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
+

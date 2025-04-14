@@ -35,18 +35,17 @@ def addRSI(data):
 
 def get_apple_stock_split(days_lag = 5):
     # Download Apple stock data
-    data = yf.download("AAPL", start="2014-01-01", end="2023-01-01")
+    data = yf.download("AAPL", start="2015-01-01", end="2024-01-01")
 
     # Calculate moving averages and relative price change
-    data[f'SMA_{days_lag}'] = data['Close'].rolling(window=days_lag).mean()
     data['SMA_10'] = data['Close'].rolling(window=10).mean()
     data['SMA_50'] = data['Close'].rolling(window=50).mean()
 
     # Set target as next difference in price
-    data['Target'] = -data['Close'].diff(-1)
+    data['Target'] = data['Close'].diff(1)
 
     # Create lag columns
-    lags = {f'lag_{i}': data['Close'].diff(i) for i in range(1, days_lag + 1)}
+    lags = {f'lag_{i}': data['Close'].diff(-i) for i in range(1, days_lag + 1)}
     data = data.assign(**lags)
 
     # add RSI
@@ -62,49 +61,12 @@ def get_apple_stock_split(days_lag = 5):
     data.dropna(inplace=True)
 
     # Features
-    X = data[['SMA_10', 'SMA_50', f'SMA_{days_lag}', 'High', 'Close', 'Open','Volume', 'Low', 'RSI', 'ATR', 'Day_of_Week'] + [f'lag_{i}' for i in range(1, days_lag + 1)]]
+    X = data[['SMA_10', 'SMA_50', 'High', 'Close', 'Open', 'Low', 'RSI', 'ATR', 'Day_of_Week'] + [f'lag_{i}' for i in range(1, days_lag + 1)]]
     # Target
     Y = data[['Target']]
     
     # Split data into training and testing sets
-    X_train, X_test, y_train, y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+    X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
     
-    return X_train, X_test, y_train, y_test
-
-
-
-def get_recent_apple_stock_split(days_lag = 5):
-    # Download Apple stock data
-    data = yf.download("AAPL", start="2024-01-01", end="2025-01-01")
-
-    # Calculate moving averages and relative price change
-    data[f'SMA_{days_lag}'] = data['Close'].rolling(window=days_lag).mean()
-    data['SMA_10'] = data['Close'].rolling(window=10).mean()
-    data['SMA_50'] = data['Close'].rolling(window=50).mean()
-
-    # Set target as next difference in price
-    data['Target'] = -data['Close'].diff(-1)
-
-    # Create lag columns
-    lags = {f'lag_{i}': data['Close'].diff(i) for i in range(1, days_lag + 1)}
-    data = data.assign(**lags)
-
-    # add RSI
-    data = addRSI(data)
-
-    #add atr
-    data = addATR(data)
-
-    # Add day of the week as an integer (Monday=0, ..., Friday=4)
-    data['Day_of_Week'] = data.index.dayofweek
+    return X_train, X_test, Y_train, Y_test
     
-    # Drop rows with missing values
-    data.dropna(inplace=True)
-
-    # Features
-    X = data[['SMA_10', 'SMA_50', f'SMA_{days_lag}', 'High', 'Close', 'Open','Volume', 'Low', 'RSI', 'ATR', 'Day_of_Week'] + [f'lag_{i}' for i in range(1, days_lag + 1)]]
-    # Target
-    y = data[['Target']]
-    
-    
-    return X, y

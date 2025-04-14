@@ -13,19 +13,38 @@ def get_predictived_earnings(prediction, actual):
 """
 given a list of predictions and the true value return how many times the model predicted the correct direction
 """
-def get_num_correct_direction(predictions, real):
-    actual = pd.DataFrame()
-    actual["Target"] = real
+def get_num_correct_direction_difference(predictions, observations):
+    correct_num = np.sum(np.sign(predictions) == np.sign(observations))
 
-    actual["diff"] = actual['Target'].diff()
-    actual["prediction"] = predictions
-    actual["predicted_diff"] = actual["prediction"] - actual["Target"].shift(1)
-    actual.dropna(inplace=True)
-
-    correct_num = sum(np.sign(actual["predicted_diff"]) == np.sign(actual["diff"]))
-    print(f"{correct_num} correct directions out of a total: {len(actual)}" )
+    print(f"{correct_num} correct directions out of a total: {len(predictions)}" )
+    return correct_num
     
+def get_num_correct_direction_actual(predictions, obs):
+    correct_num = 0
+    for index in range(1, obs):
+        is_actual_increase = obs[index] >= obs[index - 1]
+        is_predicted_increase = predictions[index] >= obs[index - 1]
 
+        if is_actual_increase == is_predicted_increase:
+            correct_num += 1
+
+    print(f"{correct_num} correct directions out of a total: {len(predictions)}" )
+    return correct_num
+
+def get_cumulative_return_difference(predictions, obs): #assume buy when predict increase
+    cum_reward = 0
+    for index in range(1, obs):
+        is_increase = obs[index] >= obs[index - 1]
+        is_predicted_increase = predictions[index] >= obs[index - 1]
+
+        if is_actual_increase == is_predicted_increase:
+            cum_reward += obs
+
+    print(f"{correct_num} correct directions out of a total: {len(predictions)}" )
+    return correct_num 
+
+
+    
 # def main():
 #     data = {
 #         "Target":[0, 100, 50, 60, 70, 80]

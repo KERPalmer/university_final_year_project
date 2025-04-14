@@ -10,3 +10,4 @@ __pycache__/
 *.pkl
 *.env
 .DS_Store
+venv_linux
